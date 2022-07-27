@@ -22,7 +22,7 @@ const pool  = mysql.createPool({
     database        : 'music'
 })
    
-// Get all tasks
+// Get all songs
 app.get('/music', (req, res) => {
     pool.getConnection((err, connection) => {
         if(err) throw err
