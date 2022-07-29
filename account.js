@@ -132,7 +132,7 @@ app.post('/accounts', (req, res) => {
                 res.send({err : err})
             }
             if (rows.length > 0){
-                res.send(rows)         
+                res.send({rows})         
             } else {
                 res.send({message : "Wrong email or password."})
             }        
