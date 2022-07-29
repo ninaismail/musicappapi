@@ -43,11 +43,13 @@ app.get('/accounts', (req, res) => {
 })
 
 // Add an Account
-app.post('/accounts', (req, res) => {
+app.post('/register', (req, res) => {
     pool.getConnection((err, connection) => {
         if(err) throw err
         const inputtitle = req.body.Email;
-        connection.query('INSERT INTO Account (Email) VALUES ("?")', [inputtitle], (err, rows) => {
+        const inputpass = req.body.Password
+
+        connection.query('INSERT INTO Account (Email ,Password) VALUES ("?","?")', [inputtitle, inputpass], (err, rows) => {
         connection.release() // return the connection to pool
         if (!err) {
             res.send(`Account with the record ID  has been added.`)
@@ -100,9 +102,10 @@ app.put('/accounts/:id', (req, res) => {
 
     pool.getConnection((err, connection) => {
         if(err) throw err
-        console.log(`connected as AccountID ${connection.threadId}`)
+        console.log(`connected as id ${connection.threadId}`)
         const inputtitle = req.body.Email
-        connection.query('UPDATE Account SET Email = ? WHERE AccontID = ?', [inputtitle, req.params.id] , (err, rows) => {
+        const inputpass = req.body.Password
+        connection.query('UPDATE Account SET Email = ?, Password = ? WHERE AccontID = ?', [inputtitle,inputpass, req.params.id] , (err, rows) => {
             connection.release() // return the connection to pool
 
             if(!err) {
@@ -117,6 +120,25 @@ app.put('/accounts/:id', (req, res) => {
     })
 })
 
+//login 
+app.post('/accounts', (req, res) => {
+    pool.getConnection((err, connection) => {
+        if(err) throw err
+        connection.query('SELECT * FROM Account WHERE Email = "?" AND Password = "?"'
+        , [req.body.Email, req.body.Password]
+        , (err, rows) => {
+            connection.release() // return the connection to pool
+            if (err) {
+                res.send({err : err})
+            }
+            if (rows.length > 0){
+                res.send(rows)         
+            } else {
+                res.send({message : "Wrong email or password."})
+            }        
+        })
+    })
+});
 
 // Listen on enviroment port or 5000
 app.listen(port, () => console.log(`Listening on port ${port}`))
