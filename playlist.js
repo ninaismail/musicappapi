@@ -41,7 +41,6 @@ app.get('/myplaylists', (req, res) => {
         })
     })
 })
-
 // Add a playlist
 app.post('/myplaylists', (req, res) => {
     pool.getConnection((err, connection) => {
@@ -61,30 +60,12 @@ app.post('/myplaylists', (req, res) => {
         })
     })
 });
-
-// Get a playlist by id
-app.get('/myplaylists/:id', (req, res) => {
-    pool.getConnection((err, connection) => {
-        if(err) throw err
-        connection.query('SELECT * FROM playlist WHERE PlaylistID = ?', [req.body.id], (err, rows) => {
-            connection.release() // return the connection to pool
-            if (!err) {
-                res.send(rows)
-            } else {
-                console.log(err)
-            }
-            
-            console.log('The data from playlist table are: \n', rows)
-        })
-    })
-});
-
 // Delete a playlist by id
 app.delete('/myplaylists/:id', (req, res) => {
 
     pool.getConnection((err, connection) => {
         if(err) throw err
-        connection.query('DELETE FROM playlist WHERE PlaylistID = ?', [req.params.id], (err, rows) => {
+        connection.query('DELETE FROM playlist WHERE id = ?', [req.params.id], (err, rows) => {
             connection.release() // return the connection to pool
             if (!err) {
                 res.send(`Song with the record ID ${[req.params.id]} has been removed.`)
@@ -101,9 +82,9 @@ app.put('/myplaylists/:id', (req, res) => {
 
     pool.getConnection((err, connection) => {
         if(err) throw err
-        console.log(`connected as PlaylistID ${connection.threadId}`)
+        console.log(`connected as id ${connection.threadId}`)
         const inputtitle = req.body.Title
-        connection.query('UPDATE playlist SET Title = ? WHERE PlaylistID = ?', [inputtitle, req.params.id] , (err, rows) => {
+        connection.query('UPDATE playlist SET Title = ?, image = ?,  WHERE id = ?', [inputtitle, req.params.id] , (err, rows) => {
             connection.release() // return the connection to pool
 
             if(!err) {
@@ -118,6 +99,24 @@ app.put('/myplaylists/:id', (req, res) => {
     })
 })
 
+
+
+// Get a playlist by id
+app.get('/myplaylists/:id', (req, res) => {
+    pool.getConnection((err, connection) => {
+        if(err) throw err
+        connection.query('SELECT * FROM playlist WHERE id = ?', [req.body.id], (err, rows) => {
+            connection.release() // return the connection to pool
+            if (!err) {
+                res.send(rows)
+            } else {
+                console.log(err)
+            }
+            
+            console.log('The data from playlist table are: \n', rows)
+        })
+    })
+});
 
 // Listen on enviroment port or 5000
 app.listen(port, () => console.log(`Listening on port ${port}`))
