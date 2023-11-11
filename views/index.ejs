@@ -1,11 +1,34 @@
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Node.js Again!</title>
-</head>
+<%- include("./partials/head.ejs") %>
+
 <body>
-  <h1>Home</h1>
-  <h2>You got this! you undestand this.</h2>
+  <%- include("./partials/nav.ejs") %>
+
+  <div class="blogs content">
+    <h2>All Songs</h2>
+
+    <% if (songs.length > 0) { %>
+      <div class="song-list">
+        <% songs.forEach(song => { %>
+          <div class="song">
+            <img src="<%= song.image %>" alt="<%= song.title %>">
+            <div class="song-details">
+              <h1><a href="/songs/<%= song.song_id %>"><%= song.title %></a></h1>
+              <p><%= song.artist %> -  <%= song.album %></p>
+              <p class="song-release-date">Released on: <%= song.date_of_release.getFullYear() %></p>
+              <p class="song-duration"><%= song.duration %></p>
+              <!-- Add more fields as needed -->
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p>There are no songs to display...</p>
+    <% } %>
+    
+    
+  </div>
+
+  <%- include("./partials/footer.ejs") %>
 </body>
 </html>
